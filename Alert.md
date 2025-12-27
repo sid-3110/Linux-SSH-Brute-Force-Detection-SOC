@@ -1,39 +1,107 @@
-# SIEM Alert Explanation – Linux SSH Brute Force Detection
-
-## Alert Name
-Multiple Failed SSH Login Attempts
+# SIEM Alert: Linux SSH Authentication Anomaly
 
 ---
 
-## Alert Description
-This alert is generated when multiple failed SSH authentication attempts are detected from the same source IP address within a short time window.
+## Alert ID
+SOC-LNX-SSH-0007
 
-The goal of this alert is to identify potential brute-force attacks targeting SSH services on Linux servers.
+---
+
+## Alert Name
+Multiple Failed SSH Authentication Attempts
+
+---
+
+## Alert Type
+Authentication Anomaly
 
 ---
 
 ## Alert Severity
 Medium
 
-Severity is classified as Medium because the activity indicates malicious intent but does not confirm a successful compromise.
+---
+
+## Alert Status
+New
 
 ---
 
-## Alert Trigger Conditions
+## Alert Description
+This alert was generated after detecting multiple failed SSH authentication attempts on a Linux server from a single source IP address within a short time window.
+
+The behavior exceeds the normal threshold for authentication failures and requires analyst review.
+
+---
+
+## Detection Logic (High-Level)
 The alert is triggered when:
-- Multiple SSH login failures are detected
-- The same source IP address is involved
+- SSH authentication failure events are detected
+- Multiple failures originate from the same source IP
 - The same user account is targeted
-- Attempts occur within a short time period
-- Logs indicate SSH authentication failures
+- Events occur repeatedly within a defined time window
 
 ---
 
-## Log Source
-- OS: Linux (Ubuntu)
-- Log File: `/var/log/auth.log`
-- Service: SSH (Port 22)
+## Affected Asset
+- Hostname: PROD-LINUX-01
+- Asset Type: Linux Server
+- Operating System: Ubuntu Linux
+- Service: SSH
+- Port: 22
 
 ---
 
-## Example Log Event
+## Affected Account
+- Username: root
+- Account Privilege Level: Privileged
+
+---
+
+## Event Details
+- Log Source: `/var/log/auth.log`
+- Event Type: Failed SSH Authentication
+- Event Message: `Failed password`
+- Number of Failed Attempts: 20
+- Time Window: 4 minutes
+
+---
+
+## Source Information
+- Source IP Address: 103.71.88.19
+- Source Network: External
+- Geo Location: Unknown
+- Known Reputation: Not Available
+
+---
+
+## Event Timeline
+| Timestamp (UTC) | Event Description |
+|-----------------|------------------|
+| 03:12:01 | SSH authentication failure |
+| 03:12:05 | SSH authentication failure |
+| 03:12:10 | SSH authentication failure |
+| 03:12:15 | SSH authentication failure |
+| 03:12:20 | SSH authentication failure |
+
+---
+
+## Analyst Notes (Initial)
+This alert indicates repeated SSH authentication failures targeting a privileged account from an external source.  
+Further investigation is required to determine whether the activity represents a false positive or a malicious brute-force attempt.
+
+---
+
+## Recommended Analyst Actions
+- Review authentication logs for related events
+- Correlate failures by source IP, user, and time
+- Check for any successful login events following failures
+- Apply user, system, and timing context
+- Determine appropriate classification (false positive or suspicious)
+
+---
+
+## MITRE ATT&CK (Potential Mapping)
+- Tactic: Credential Access
+- Technique: T1110 – Brute Force
+- Sub-Technique: T1110.001 – Password Guessing
